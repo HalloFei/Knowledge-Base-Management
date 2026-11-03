@@ -480,7 +480,7 @@ def cmd_archive(args):
     dest = root / cfg["archive"] / t / src.name
     dest.parent.mkdir(parents=True, exist_ok=True)
     tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--error-unmatch", rp],
-                             capture_output=True, text=True)
+                             capture_output=True, text=True, encoding="utf-8", errors="replace")
     if tracked.returncode == 0:
         subprocess.run(["git", "-C", str(root), "mv", rp, dest.relative_to(root).as_posix()], check=True)
     else:
@@ -505,11 +505,14 @@ def cmd_hook(args):
     if root is None:
         print("kb: no docs/kb.yaml found")
         return 2
-    git_dir = root / ".git"
-    if not git_dir.is_dir():
+    probe = subprocess.run(["git", "-C", str(root), "rev-parse", "--git-path", "hooks/pre-commit"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if probe.returncode != 0 or not probe.stdout:
         print("kb: not a git repository: " + str(root))
         return 2
-    hook = git_dir / "hooks" / "pre-commit"
+    hook = Path(probe.stdout.strip())
+    if not hook.is_absolute():
+        hook = root / hook
     if args.remove:
         if hook.exists():
             hook.unlink()

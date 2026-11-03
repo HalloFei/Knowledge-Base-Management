@@ -144,7 +144,7 @@ class KbTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = make_ws(tmp, {"docs/specs/a.md": "# a\n"})
             run("index", "--root", root)
-            (root / ".git" / "hooks").mkdir(parents=True)
+            subprocess.run(["git", "init"], cwd=root, capture_output=True, text=True)
             r = run("hook", "--install", "--root", root)
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
             hook = root / ".git" / "hooks" / "pre-commit"
