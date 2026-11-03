@@ -1,5 +1,7 @@
 # kb — knowledge-base lifecycle for docs trees
 
+![ci](https://github.com/HalloFei/Knowledge-Base-Management/actions/workflows/ci.yml/badge.svg)
+
 A tiny, dependency-free engine that keeps a documentation tree honest: one authoritative
 index, a closed status vocabulary, frozen archives, and a single command that fails when
 reality and the index disagree.
